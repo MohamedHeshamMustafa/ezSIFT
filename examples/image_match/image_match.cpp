@@ -100,16 +100,20 @@ int main(int argc, char *argv[])
 
 #include "ezsift.h"
 
+#include <algorithm>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <list>
-#include <algorithm>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <string>
 #include <vector>
-#include <boost/filesystem.hpp>
 
-// If this variable is set with 1, will output keypoints and matches else if zero will output only matches
+// If this variable is set with 1, will output keypoints and matches else if
+// zero will output only matches
 #define OUTPUT_KEY_POINTS 0
 using namespace boost::filesystem;
+using namespace cv;
 
 struct path_leaf_string {
     std::string
@@ -129,44 +133,54 @@ void read_directory(const std::string &name, std::vector<std::string> &v)
 
 int main(int argc, char *argv[])
 {
-    std::cout << "inside main" << std::endl;
-    // check input which should be exe file , input directory and output directory
+    std::cout << "inside main" << std::endl; // debugging
+    // check input which should be exe file , input directory and output
+    // directory
     if (argc != 3) {
         printf("Please enter input and output directories.\n");
         printf("usage: image_match directory\n");
         return -1;
     }
 
-
     // Read images in directory
-    std::string input_dir_name = argv[1];
-    std::string output_dir_name = argv[2];
+    std::string delimeter = "\\";
+    std::string jpg_input_dir_name = argv[1] + delimeter;
+    std::string pgm_input_dir_name = argv[1] + delimeter + "..//pgm_images";
+    std::string output_dir_name = argv[2] + delimeter;
 
-    boost::filesystem::path dir(output_dir_name);
-    if (boost::filesystem::create_directory(dir)) {
+    boost::filesystem::path tmp_input_dir(pgm_input_dir_name);
+    if (boost::filesystem::create_directory(tmp_input_dir)) {
+        std::cout << "tmp input directory created" << std::endl;
+    }
+
+    boost::filesystem::path output_dir(output_dir_name);
+    if (boost::filesystem::create_directory(output_dir)) {
         std::cout << "Output directory created" << std::endl;
     }
+
+    // conversion from jpg to pgm
+    std::vector<std::string> jpg_dirlist;
+    read_directory(jpg_input_dir_name, jpg_dirlist);
+
+	std::vector<int> CV_IMWRITE_PXM_BINARY_PARAM;
+    CV_IMWRITE_PXM_BINARY_PARAM.push_back(1);
+
+    for (int i = 0; i < jpg_dirlist.size(); i++)
+	{
+        Mat input_image;
+
+		input_image = imread(jpg_dirlist[i], IMREAD_GRAYSCALE); 
+		imwrite(pgm_input_dir_name, input_image, CV_IMWRITE_PXM_BINARY_PARAM);
+
+
+	}
+
+
+
+
     std::vector<std::string> dirlist;
-    read_directory(input_dir_name, dirlist);
-	
+    read_directory(pgm_input_dir_name, dirlist);
 
-
-    /*DIR *d;
-    struct dirent *dir;
-    std::vector<std::string> dirlist;
-    d = opendir(input_dir_name.c_str());
-
-    if (d) {
-        while ((dir = readdir(d)) != NULL) {
-            if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")) {
-                std::string image_name = dir->d_name;
-                dirlist.push_back(image_name);
-            }
-        }
-
-        closedir(d);
-    }*/
-	//convert from jpg
 
 	for (int i = 0; i < dirlist.size(); i++)
         std::cout << dirlist[i] << std::endl;
@@ -176,14 +190,15 @@ int main(int argc, char *argv[])
         char file1[255];
         char file2[255];
 
-		std::cout << (input_dir_name + dirlist[i]).c_str()  << std::endl;
-        memcpy(file1, (input_dir_name + dirlist[i]).c_str(),
-               sizeof(char) * strlen((input_dir_name + dirlist[i]).c_str()));
-        file1[strlen((input_dir_name + dirlist[i]).c_str())] = 0;
-        memcpy(file2, (input_dir_name + dirlist[i + 1]).c_str(),
+        std::cout << (pgm_input_dir_name + dirlist[i]).c_str() << std::endl;
+        memcpy(file1, (pgm_input_dir_name + dirlist[i]).c_str(),
                sizeof(char) *
-                   strlen((input_dir_name + dirlist[i + 1]).c_str()));
-        file2[strlen((input_dir_name + dirlist[i + 1]).c_str())] = 0;
+                   strlen((pgm_input_dir_name + dirlist[i]).c_str()));
+        file1[strlen((pgm_input_dir_name + dirlist[i]).c_str())] = 0;
+        memcpy(file2, (pgm_input_dir_name + dirlist[i + 1]).c_str(),
+               sizeof(char) *
+                   strlen((pgm_input_dir_name + dirlist[i + 1]).c_str()));
+        file2[strlen((pgm_input_dir_name + dirlist[i + 1]).c_str())] = 0;
 
         // Read two input images
         ezsift::Image<unsigned char> image1, image2;

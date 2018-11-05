@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\examples",
+    "\\examples\\feature_extract",
+    "\\examples\\image_match",
+    "\\platforms",
+    "\\platforms\\desktop",
+    "\\src"
+  ],
+  "SelectedNode": "\\platforms\\desktop\\CMakeLists.txt",
+  "PreviewInSolutionExplorer": false
+}

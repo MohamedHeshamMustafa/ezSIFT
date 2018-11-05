@@ -5,6 +5,9 @@ project(${EZSIFT})
 
 option(EZSIFT_BUILD_EXAMPLES "Build with examples" ON)
 
+SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "D:/OpenMVG/vcpkg/installed/x64-windows/bin")
+SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "D:/OpenMVG/vcpkg/installed/x64-windows/lib")
+
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
@@ -13,6 +16,9 @@ find_package(Boost 1.68.0 COMPONENTS filesystem)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS}) 
 endif()
+
+find_package(OpenCV REQUIRED COMPONENTS core calib3d features2d imgproc highgui)
+
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
