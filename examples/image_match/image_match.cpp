@@ -145,6 +145,7 @@ int main(int argc, char *argv[])
     // Read images in directory
     std::string delimeter = "\\";
     std::string jpg_input_dir_name = argv[1] + delimeter;
+    //std::string png_input_dir_name = argv[1] + delimeter + "..//png_images//"; //debugging
     std::string pgm_input_dir_name = argv[1] + delimeter + "..//pgm_images//";
     std::string output_dir_name = argv[2] + delimeter;
 
@@ -169,13 +170,12 @@ int main(int argc, char *argv[])
     for (int i = 0; i < jpg_dirlist.size(); i++)
 	{
         Mat input_image;
-        //std::string output_name_pgm = pgm_input_dir_name + jpg_dirlist[i] + ".pgm";
+        std::string input_name_pgm = jpg_input_dir_name + jpg_dirlist[i]; 
         std::string output_name_pgm = pgm_input_dir_name + jpg_dirlist[i].erase(jpg_dirlist[i].find(".jpg"), 4) +  ".pgm"; 
-		input_image = imread(jpg_dirlist[i], IMREAD_GRAYSCALE); 
+		input_image = imread(input_name_pgm, IMREAD_GRAYSCALE); 
 		imwrite(output_name_pgm, input_image, CV_IMWRITE_PXM_BINARY_PARAM);
-
-
 	}
+
 
 
 
