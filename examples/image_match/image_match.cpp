@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
     // Read images in directory
     std::string delimeter = "\\";
     std::string jpg_input_dir_name = argv[1] + delimeter;
-    std::string pgm_input_dir_name = argv[1] + delimeter + "..//pgm_images";
+    std::string pgm_input_dir_name = argv[1] + delimeter + "..//pgm_images//";
     std::string output_dir_name = argv[2] + delimeter;
 
     boost::filesystem::path tmp_input_dir(pgm_input_dir_name);
@@ -163,14 +163,16 @@ int main(int argc, char *argv[])
     read_directory(jpg_input_dir_name, jpg_dirlist);
 
 	std::vector<int> CV_IMWRITE_PXM_BINARY_PARAM;
+    CV_IMWRITE_PXM_BINARY_PARAM.push_back(CV_IMWRITE_PXM_BINARY);
     CV_IMWRITE_PXM_BINARY_PARAM.push_back(1);
 
     for (int i = 0; i < jpg_dirlist.size(); i++)
 	{
         Mat input_image;
-
+        //std::string output_name_pgm = pgm_input_dir_name + jpg_dirlist[i] + ".pgm";
+        std::string output_name_pgm = pgm_input_dir_name + jpg_dirlist[i].erase(jpg_dirlist[i].find(".jpg"), 4) +  ".pgm"; 
 		input_image = imread(jpg_dirlist[i], IMREAD_GRAYSCALE); 
-		imwrite(pgm_input_dir_name, input_image, CV_IMWRITE_PXM_BINARY_PARAM);
+		imwrite(output_name_pgm, input_image, CV_IMWRITE_PXM_BINARY_PARAM);
 
 
 	}
