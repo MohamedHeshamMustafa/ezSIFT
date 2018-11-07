@@ -230,6 +230,10 @@ int match_keypoints(std::list<SiftKeypoint> &kpt_list1,
                     std::list<SiftKeypoint> &kpt_list2,
                     std::list<MatchPair> &match_list);
 
+void writeMacfile(std::string &imageName,
+                  std::string &macFilesPath,
+                  std::list<SiftKeypoint> &kpt_list);
+
 } // end namespace ezsift
 
 #endif

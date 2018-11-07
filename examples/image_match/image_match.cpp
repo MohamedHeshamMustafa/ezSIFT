@@ -177,9 +177,6 @@ int main(int argc, char *argv[])
 	}
 
 
-
-
-
     std::vector<std::string> dirlist;
     read_directory(pgm_input_dir_name, dirlist);
 
@@ -193,13 +190,9 @@ int main(int argc, char *argv[])
         char file2[255];
 
         std::cout << (pgm_input_dir_name + dirlist[i]).c_str() << std::endl;
-        memcpy(file1, (pgm_input_dir_name + dirlist[i]).c_str(),
-               sizeof(char) *
-                   strlen((pgm_input_dir_name + dirlist[i]).c_str()));
+        memcpy(file1, (pgm_input_dir_name + dirlist[i]).c_str(), sizeof(char) *strlen((pgm_input_dir_name + dirlist[i]).c_str()));
         file1[strlen((pgm_input_dir_name + dirlist[i]).c_str())] = 0;
-        memcpy(file2, (pgm_input_dir_name + dirlist[i + 1]).c_str(),
-               sizeof(char) *
-                   strlen((pgm_input_dir_name + dirlist[i + 1]).c_str()));
+        memcpy(file2, (pgm_input_dir_name + dirlist[i + 1]).c_str(), sizeof(char) *strlen((pgm_input_dir_name + dirlist[i + 1]).c_str()));
         file2[strlen((pgm_input_dir_name + dirlist[i + 1]).c_str())] = 0;
 
         // Read two input images
@@ -213,10 +206,8 @@ int main(int argc, char *argv[])
             printf("Failed to open input image2!\n");
             return -1;
         }
-        std::cout << "Image 1 loaded, image size: " << image1.w << " x "
-                  << image1.h << std::endl;
-        std::cout << "Image 2 loaded, image size: " << image2.w << " x "
-                  << image2.h << std::endl;
+        std::cout << "Image 1 loaded, image size: " << image1.w << " x " << image1.h << std::endl;
+        std::cout << "Image 2 loaded, image size: " << image2.w << " x " << image2.h << std::endl;
 
         // Double the original image as the first octive.
         ezsift::double_original_image(true);
@@ -225,49 +216,45 @@ int main(int argc, char *argv[])
         std::list<ezsift::SiftKeypoint> kpt_list1, kpt_list2;
         std::cout << "\nSIFT detection on image 1 ..." << std::endl;
         ezsift::sift_cpu(image1, kpt_list1, true);
-        std::cout << "# keypoints in image 1: "
-                  << static_cast<unsigned int>(kpt_list1.size()) << std::endl;
+        std::cout << "# keypoints in image 1: " << static_cast<unsigned int>(kpt_list1.size()) << std::endl;
 
         std::cout << "\nSIFT detection on image 2 ..." << std::endl;
         ezsift::sift_cpu(image2, kpt_list2, true);
-        std::cout << "# keypoints in image2: "
-                  << static_cast<unsigned int>(kpt_list2.size()) << std::endl;
+        std::cout << "# keypoints in image2: " << static_cast<unsigned int>(kpt_list2.size()) << std::endl;
 
         std::string file_name;
 
+        ezsift::writeMacfile(dirlist[i], jpg_input_dir_name, kpt_list1);
+        ezsift::writeMacfile(dirlist[i+1], jpg_input_dir_name, kpt_list1);
+
         if (OUTPUT_KEY_POINTS) {
             // Save keypoint list, and draw keypoints on images.
-            file_name =
-                output_dir_name + "sift_keypoints_" + dirlist[i] + ".ppm";
+            file_name = output_dir_name + "sift_keypoints_" + dirlist[i] + ".ppm";
             std::cout << file_name << std::endl;
-            ezsift::draw_keypoints_to_ppm_file(file_name.c_str(), image1,
-                                               kpt_list1);
+            ezsift::draw_keypoints_to_ppm_file(file_name.c_str(), image1, kpt_list1);
 
-            file_name =
-                output_dir_name + "sift_keypoints_" + dirlist[i] + ".key";
+            file_name = output_dir_name + "sift_keypoints_" + dirlist[i] + ".key";
             ezsift::export_kpt_list_to_file(file_name.c_str(), kpt_list1, true);
 
-            file_name =
-                output_dir_name + "sift_keypoints_" + dirlist[i + 1] + ".ppm";
-            ezsift::draw_keypoints_to_ppm_file(file_name.c_str(), image2,
-                                               kpt_list2);
+            file_name = output_dir_name + "sift_keypoints_" + dirlist[i + 1] + ".ppm";
+            ezsift::draw_keypoints_to_ppm_file(file_name.c_str(), image2, kpt_list2);
 
-            file_name =
-                output_dir_name + "sift_keypoints_" + dirlist[i + 1] + ".key";
+            file_name = output_dir_name + "sift_keypoints_" + dirlist[i + 1] + ".key";
             ezsift::export_kpt_list_to_file(file_name.c_str(), kpt_list2, true);
+
+			// Match keypoints.
+            std::list<ezsift::MatchPair> match_list;
+            ezsift::match_keypoints(kpt_list1, kpt_list2, match_list);
+
+            // Draw result image.
+            ezsift::draw_match_lines_to_ppm_file(file_name.c_str(), image1,
+                                                 image2, match_list);
+            std::cout << "# of matched keypoints: "
+                      << static_cast<unsigned int>(match_list.size())
+                      << std::endl;
         }
 
-        // Match keypoints.
-        std::list<ezsift::MatchPair> match_list;
-        ezsift::match_keypoints(kpt_list1, kpt_list2, match_list);
-
-        // Draw result image.
-        file_name = output_dir_name + "sift_matching_" + dirlist[i] + "_" +
-                    dirlist[i + 1] + ".key";
-        ezsift::draw_match_lines_to_ppm_file(file_name.c_str(), image1, image2,
-                                             match_list);
-        std::cout << "# of matched keypoints: "
-                  << static_cast<unsigned int>(match_list.size()) << std::endl;
-    }
-    return 0;
+	}
+		
+		return 0;
 }

@@ -36,6 +36,8 @@
 #include <limits>
 #include <list>
 
+#include <boost/filesystem.hpp>
+
 namespace ezsift {
 
 // Init sift parameters
@@ -1226,5 +1228,58 @@ int sift_cpu(const Image<unsigned char> &image,
 
     return 0;
 }
+
+
+// Writing mac files
+
+void writeMacfile(std::string &imageName,
+                  std::string &macFilesPath,
+                  std::list<SiftKeypoint> &kpt_list)
+{
+    // prepare image properties.
+    auto macFileName = imageName.erase(imageName.find(".pgm"), 4) + ".mac";
+
+    // write features to mac file.
+    char buf[2048];
+    FILE *keysFile;
+
+    unsigned int descSize = DEGREE_OF_DESCRIPTORS;
+
+    sprintf(buf, (macFilesPath + macFileName).c_str());
+    keysFile = fopen(buf, "w");
+    fprintf(keysFile, "%d ", kpt_list.size());
+    fprintf(keysFile, "%d\n", descSize);
+
+    for (SiftKeypoint pt : kpt_list) {
+        fprintf(keysFile, "%f ",
+                (float)pt
+                    .c); // y first as in the ReadKeys() in keys2a.cpp read
+        fprintf(keysFile, "%f ", (float)pt.r);
+        fprintf(keysFile, "%f ", (float)pt.scale);
+        fprintf(keysFile, "%f\n",
+            (float)(pt.ori * PI / 180.0)); 
+
+        int blk = 0;
+        for (int line = 0; line < 7; ++line) {
+            if (line < 6) {
+                for (int l = 0; l < 20; ++l)
+                    fprintf(keysFile, "%d ",
+                            (int)(pt.descriptors[blk + l] /* * 255*/));
+                blk += 20;
+                fprintf(keysFile, "\n");
+            }
+            else {
+                for (int m = 0; m < 8; ++m)
+                    fprintf(keysFile, "%d ",
+                            (int)(pt.descriptors[m + 120] /* * 255*/));
+                fprintf(keysFile, "\n");
+            }
+        }
+    }
+    
+    fclose(keysFile);
+
+	}
+
 
 } // end namespace ezsift
