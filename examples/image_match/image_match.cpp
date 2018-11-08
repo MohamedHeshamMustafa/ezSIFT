@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
         std::string file_name;
 
         ezsift::writeMacfile(dirlist[i], jpg_input_dir_name, kpt_list1);
-        ezsift::writeMacfile(dirlist[i+1], jpg_input_dir_name, kpt_list1);
+        ezsift::writeMacfile(dirlist[i+1], jpg_input_dir_name, kpt_list2);
 
         if (OUTPUT_KEY_POINTS) {
             // Save keypoint list, and draw keypoints on images.

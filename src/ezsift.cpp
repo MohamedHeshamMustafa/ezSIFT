@@ -1253,8 +1253,8 @@ void writeMacfile(std::string &imageName,
     for (SiftKeypoint pt : kpt_list) {
         fprintf(keysFile, "%f ",
                 (float)pt
-                    .c); // y first as in the ReadKeys() in keys2a.cpp read
-        fprintf(keysFile, "%f ", (float)pt.r);
+                    .r); // y first as in the ReadKeys() in keys2a.cpp read
+        fprintf(keysFile, "%f ", (float)pt.c); // X = colomn & y = row
         fprintf(keysFile, "%f ", (float)pt.scale);
         fprintf(keysFile, "%f\n",
             (float)(pt.ori * PI / 180.0)); 
